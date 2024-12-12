@@ -1,4 +1,4 @@
-version: "3"
+# version: "3"
 services:
   hapi-fhir-jpaserver-start:
     build: .
@@ -11,15 +11,32 @@ services:
       SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
     ports:
       - "8080:8080"
+    depends_on:
+      - hapi-fhir-postgres
+      - hapi-fhir-sql-server
   hapi-fhir-postgres:
     image: postgres:15-alpine
     container_name: hapi-fhir-postgres
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: "hapi"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "admin"
     volumes:
       - hapi-fhir-postgres:/var/lib/postgresql/data
+  hapi-fhir-sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: hapi-fhir-sql-server
+    restart: always
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "admin"
+    volumes:
+      - hapi-fhir-sql-server:/var/opt/mssql
 volumes:
   hapi-fhir-postgres:
+  hapi-fhir-sql-server:
