@@ -5,15 +5,24 @@ services:
     container_name: hapi-fhir-jpaserver-start
     restart: on-failure
     environment:
+      # SPRING_DATASOURCE_URL: "jdbc:sqlserver://hapi-fhir-sql-server:1433;databaseName=hapi"
+      # SPRING_DATASOURCE_USERNAME: "sa"
+      # SPRING_DATASOURCE_PASSWORD: "hapi!fhir!admin"
+      # SPRING_DATASOURCE_DRIVERCLASSNAME: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://hapi-fhir-postgres:5432/hapi"
       SPRING_DATASOURCE_USERNAME: "admin"
       SPRING_DATASOURCE_PASSWORD: "admin"
       SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
+      #Hibernate dialect is automatically detected except Postgres and H2.
+      #If using H2, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
+      #If using postgres, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      # hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect"
     ports:
       - "8080:8080"
     depends_on:
       - hapi-fhir-postgres
-      - hapi-fhir-sql-server
+      # - hapi-fhir-sql-server
   hapi-fhir-postgres:
     image: postgres:15-alpine
     container_name: hapi-fhir-postgres
@@ -34,7 +43,8 @@ services:
       - "1433:1433"
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "admin"
+      MSSQL_SA_PASSWORD: "hapi!fhir!admin"
+      MSSQL_PID: "Express"
     volumes:
       - hapi-fhir-sql-server:/var/opt/mssql
 volumes:
