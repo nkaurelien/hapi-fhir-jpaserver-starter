@@ -18,11 +18,21 @@ services:
       #If using postgres, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
       # hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect"
+
+      ELASTICSEARCH_ENABLED: "false"
+      ELASTICSEARCH_REST_URL: "http://hapi-fhir-elasticsearch:9200"
+      ELASTICSEARCH_USERNAME: "SomeUsername"
+      ELASTICSEARCH_PASSWORD: "SomePassword"
+      ELASTICSEARCH_PROTOCOL: "http"
+      ELASTICSEARCH_REQUIRED_INDEX_STATUS: "YELLOW"
+      ELASTICSEARCH_SCHEMA_MANAGEMENT_STRATEGY: "CREATE"
+   
     ports:
       - "8080:8080"
     depends_on:
       - hapi-fhir-postgres
       # - hapi-fhir-sql-server
+
   hapi-fhir-postgres:
     image: postgres:15-alpine
     container_name: hapi-fhir-postgres
@@ -35,18 +45,20 @@ services:
       POSTGRES_PASSWORD: "admin"
     volumes:
       - hapi-fhir-postgres:/var/lib/postgresql/data
-  hapi-fhir-sql-server:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: hapi-fhir-sql-server
-    restart: always
-    ports:
-      - "1433:1433"
-    environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "hapi!fhir!admin"
-      MSSQL_PID: "Express"
-    volumes:
-      - hapi-fhir-sql-server:/var/opt/mssql
+  
+  # hapi-fhir-sql-server:
+  #   image: mcr.microsoft.com/mssql/server:2019-latest
+  #   container_name: hapi-fhir-sql-server
+  #   restart: always
+  #   ports:
+  #     - "1433:1433"
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     MSSQL_SA_PASSWORD: "hapi!fhir!admin"
+  #     MSSQL_PID: "Express"
+  #   volumes:
+  #     - hapi-fhir-sql-server:/var/opt/mssql
+
 volumes:
   hapi-fhir-postgres:
   hapi-fhir-sql-server:

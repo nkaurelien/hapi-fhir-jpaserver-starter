@@ -1,0 +1,38 @@
+# version: "3"
+services:
+
+  hapi-fhir-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.26
+    container_name: hapi-fhir-elasticsearch
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ELASTIC_PASSWORD=SomePassword"
+      - "xpack.security.enabled=false"
+    ports:
+      - "9200:9200"
+    volumes:
+      - hapi-fhir-elasticsearch:/usr/share/elasticsearch/data
+    deploy:
+      resources:
+        limits:
+          # cpus: '1.0'  # Limit to 2 CPUs
+          memory: '1g'  # Limit to 4GB of memory
+        reservations:
+          # cpus: '0.5'  # Reserve 1 CPU
+          memory: '512m'  # Reserve 2GB of memory
+  
+  hapi-fhir-kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.13
+    container_name: hapi-fhir-kibana
+    environment:
+      ELASTICSEARCH_URL: "http://hapi-fhir-elasticsearch:9200"
+      ELASTICSEARCH_USERNAME: "SomeUsername"
+      ELASTICSEARCH_PASSWORD: "SomePassword"
+    ports:
+      - "5601:5601"
+    depends_on:
+      - hapi-fhir-elasticsearch
+
+volumes:
+  hapi-fhir-elasticsearch:
