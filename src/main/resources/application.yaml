@@ -323,14 +323,14 @@ hapi:
 ###   1: NORMALIZED_QUANTITY_STORAGE_SUPPORTED
 ###   2: NORMALIZED_QUANTITY_SEARCH_SUPPORTED
 #    normalized_quantity_search_level: 2
-#elasticsearch:
-#  debug:
-#    pretty_print_json_log: false
-#    refresh_after_write: false
-#  enabled: false
+elasticsearch:
+ debug:
+   pretty_print_json_log: false
+   refresh_after_write: false
+ enabled: false
 #  password: SomePassword
-#  required_index_status: YELLOW
+#  username: SomeUsername
 #  rest_url: 'localhost:9200'
 #  protocol: 'http'
-#  schema_management_strategy: CREATE
-#  username: SomeUsername
+ schema_management_strategy: CREATE
+ required_index_status: YELLOW

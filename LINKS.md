@@ -24,3 +24,5 @@ https://www.youtube.com/watch?v=5ypS1XJm4YE
 # Other implementation
 - https://github.com/microsoft/fhir-server
 - https://github.com/LinuxForHealth/fhir | web: https://linuxforhealth.github.io/FHIR/
+
+- https://github.com/LinuxForHealth/FHIR/pkgs/container/fhir-server

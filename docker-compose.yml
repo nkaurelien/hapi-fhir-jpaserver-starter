@@ -4,34 +4,32 @@ services:
     build: .
     container_name: hapi-fhir-jpaserver-start
     restart: on-failure
-    environment:
-      # SPRING_DATASOURCE_URL: "jdbc:sqlserver://hapi-fhir-sql-server:1433;databaseName=hapi"
-      # SPRING_DATASOURCE_USERNAME: "sa"
-      # SPRING_DATASOURCE_PASSWORD: "hapi!fhir!admin"
-      # SPRING_DATASOURCE_DRIVERCLASSNAME: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://hapi-fhir-postgres:5432/hapi"
-      SPRING_DATASOURCE_USERNAME: "admin"
-      SPRING_DATASOURCE_PASSWORD: "admin"
-      SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
-      #Hibernate dialect is automatically detected except Postgres and H2.
-      #If using H2, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
-      #If using postgres, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
-      # hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect"
+    # environment:
+    #   SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
+    #   SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
+    #   SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+    #   SPRING_DATASOURCE_DRIVERCLASSNAME: "${SPRING_DATASOURCE_DRIVERCLASSNAME}"
+    #   SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT}"
 
-      ELASTICSEARCH_ENABLED: "false"
-      ELASTICSEARCH_REST_URL: "http://hapi-fhir-elasticsearch:9200"
-      ELASTICSEARCH_USERNAME: "SomeUsername"
-      ELASTICSEARCH_PASSWORD: "SomePassword"
-      ELASTICSEARCH_PROTOCOL: "http"
-      ELASTICSEARCH_REQUIRED_INDEX_STATUS: "YELLOW"
-      ELASTICSEARCH_SCHEMA_MANAGEMENT_STRATEGY: "CREATE"
-   
+    #   ELASTICSEARCH_ENABLED: "${ELASTICSEARCH_ENABLED}"
+    #   ELASTICSEARCH_REST_URL: "${ELASTICSEARCH_REST_URL}"
+    #   ELASTICSEARCH_USERNAME: "${ELASTICSEARCH_USERNAME}"
+    #   ELASTICSEARCH_PASSWORD: "${ELASTICSEARCH_PASSWORD}"
+    #   ELASTICSEARCH_PROTOCOL: "${ELASTICSEARCH_PROTOCOL}"
+    #   ELASTICSEARCH_REQUIRED_INDEX_STATUS: "${ELASTICSEARCH_REQUIRED_INDEX_STATUS}"
+    #   ELASTICSEARCH_SCHEMA_MANAGEMENT_STRATEGY: "${ELASTICSEARCH_SCHEMA_MANAGEMENT_STRATEGY}"
+
+    env_file:
+      - .env
+
     ports:
       - "8080:8080"
     depends_on:
       - hapi-fhir-postgres
-      # - hapi-fhir-sql-server
+    deploy:
+      resources:
+        limits:
+          memory: '1200mb'
 
   hapi-fhir-postgres:
     image: postgres:15-alpine
@@ -39,13 +37,21 @@ services:
     restart: always
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: "hapi"
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "admin"
+    # environment:
+    #   POSTGRES_DB: "${POSTGRES_DB}"
+    #   POSTGRES_USER: "${POSTGRES_USER}"
+    #   POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+
+    env_file:
+      - .env
+
     volumes:
       - hapi-fhir-postgres:/var/lib/postgresql/data
-  
+    deploy:
+      resources:
+        limits:
+          memory: '300mb'
+
   # hapi-fhir-sql-server:
   #   image: mcr.microsoft.com/mssql/server:2019-latest
   #   container_name: hapi-fhir-sql-server
@@ -59,6 +65,41 @@ services:
   #   volumes:
   #     - hapi-fhir-sql-server:/var/opt/mssql
 
+  hapi-fhir-kibana:
+    image: bitnami/kibana:latest
+    container_name: hapi-fhir-kibana
+    env_file:
+      - .env
+    ports:
+      - "5601:5601"
+    depends_on:
+      - hapi-fhir-elasticsearch
+    deploy:
+      resources:
+        limits:
+          memory: '800mb'
+  
+
+  hapi-fhir-elasticsearch:
+    image: bitnami/elasticsearch:8-debian-12
+    container_name: hapi-fhir-elasticsearch
+    env_file:
+      - .env
+    # environment:
+    #   - "discovery.type=single-node"
+    #   - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    #   - "ELASTIC_PASSWORD=SomePassword"
+    #   - "xpack.security.enabled=false"
+    ports:
+      - "9200:9200"
+    volumes:
+      - hapi-fhir-elasticsearch:/usr/share/elasticsearch/data
+    deploy:
+      resources:
+        limits:
+          memory: '1.1g'
+  
 volumes:
   hapi-fhir-postgres:
   hapi-fhir-sql-server:
+  hapi-fhir-elasticsearch:
