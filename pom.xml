@@ -252,11 +252,9 @@
             <artifactId>moment</artifactId>
         </dependency>
 
-        <!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
         <dependency>
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
-            <!-- <scope>test</scope> -->
         </dependency>
 
         <dependency>
