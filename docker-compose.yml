@@ -66,7 +66,7 @@ services:
   #     - hapi-fhir-sql-server:/var/opt/mssql
 
   hapi-fhir-kibana:
-    image: bitnami/kibana:latest
+    image: bitnami/kibana:7.17.26-debian-12-r0
     container_name: hapi-fhir-kibana
     env_file:
       - .env
@@ -81,15 +81,10 @@ services:
   
 
   hapi-fhir-elasticsearch:
-    image: bitnami/elasticsearch:8-debian-12
+    image: bitnami/elasticsearch:7.17.26-debian-12-r0
     container_name: hapi-fhir-elasticsearch
     env_file:
       - .env
-    # environment:
-    #   - "discovery.type=single-node"
-    #   - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    #   - "ELASTIC_PASSWORD=SomePassword"
-    #   - "xpack.security.enabled=false"
     ports:
       - "9200:9200"
     volumes:
