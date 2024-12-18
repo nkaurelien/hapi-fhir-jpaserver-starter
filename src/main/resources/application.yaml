@@ -316,7 +316,7 @@ hapi:
 #        startTlsEnable:
 #        startTlsRequired:
 #        quitWait:
-#    lastn_enabled: true
+    lastn_enabled: true
 #    store_resource_in_lucene_index_enabled: true
 ###  This is configuration for normalized quantity search level default is 0
 ###   0: NORMALIZED_QUANTITY_SEARCH_NOT_SUPPORTED - default
@@ -327,10 +327,10 @@ elasticsearch:
  debug:
    pretty_print_json_log: false
    refresh_after_write: false
- enabled: false
-#  password: SomePassword
-#  username: SomeUsername
-#  rest_url: 'localhost:9200'
-#  protocol: 'http'
+ enabled: true
+ password: bitnami
+ username: elastic
+ rest_url: 'hapi-fhir-elasticsearch:9200'
+ protocol: 'http'
  schema_management_strategy: CREATE
  required_index_status: YELLOW

@@ -256,7 +256,7 @@
         <dependency>
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
-            <scope>test</scope>
+            <!-- <scope>test</scope> -->
         </dependency>
 
         <dependency>
